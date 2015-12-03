@@ -5,8 +5,8 @@ The helloAuthentication sample contains an Android project that you can use to l
 Use the following steps to configure the helloAuthentication sample for Android:
 
 1. [Download the helloAuthenciation sample](#download-the-helloauthentication-sample)
-2. [Configur the mobile back end for your helloAuthentication application](#configure-the-mobile-back-end-for-your-helloauthentication-application)
-3. [Configur the front end in the helloAuthentication sample](#configure-the-front-end-in-the-helloauthentication-sample)
+2. [Configure the mobile back end for your helloAuthentication application](#configure-the-mobile-back-end-for-your-helloauthentication-application)
+3. [Configure the front end in the helloAuthentication sample](#configure-the-front-end-in-the-helloauthentication-sample)
 4. [Run the Android app](#run-the-android-app)
 
 ### Before you begin
