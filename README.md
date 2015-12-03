@@ -38,8 +38,11 @@ Configure the Mobile Client Access service:
 
 ### Configure the front end in the HelloAuthentication sample
 1. Using Android Studio, open the `bms-samples-android-helloauthentication` directory where the project was cloned.
-2. Android Studio with then kick off a Gradle sync to pull in the required IBM Mobile first dependencies (see `bms-samples-android-helloauthentication\app\build.gradle` for more info).
-3. Once that is complete, open MainActivity.java and locate the try block within the ```onCreate()``` function.
+2. Run a Gradle sync (usually starts automatically) to import the required `core` and `googleauthentication` SDKs. You can view the **build.gradle** file in the following directory:
+
+	`helloAuthentication\app\build.gradle`
+	
+3. Once that is complete, open `MainActivity.java` and locate the try block within the ```onCreate()``` function.
 4. In the ```BMSClient.getInstance().initialize()``` function replace ```<APPLICATION_ROUTE>``` and ```<APPLICATION_ID>``` with the application route and ID you were given when creating your application on Bluemix.
 ```java
 		try {
