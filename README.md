@@ -1,42 +1,42 @@
-# Android helloAuthentication application for IBM MobileFirst Services on IBM Bluemix
+# Android helloAuthentication application for Bluemix Mobile Services
 ---
 The helloAuthentication sample contains an Android project that you can use to learn more about the Mobile Client Access service.  
 
-Sections covered to use the helloPush sample for Android:
+Use the following steps to configure the helloAuthentication sample for Android:
 
-1. [Downloading the helloAuthenciation sample](#downloading-the-helloauthentication-sample)
-2. [Configuring the back end for your helloAuthentication application](#configuring-the-back-end-for-your-helloauthentication-application)
-3. [Configuring the front end in the helloAuthentication sample](#configuring-the-front-end-in-the-helloauthentication-sample)
-4. [Running the Android app](#running-the-android-app)
+1. [Download the helloAuthenciation sample](#download-the-helloauthentication-sample)
+2. [Configur the mobile back end for your helloAuthentication application](#configure-the-mobile-back-end-for-your-helloauthentication-application)
+3. [Configur the front end in the helloAuthentication sample](#configure-the-front-end-in-the-helloauthentication-sample)
+4. [Run the Android app](#run-the-android-app)
 
 ### Before you begin
 Before you start, make sure you have:
 
 - A [Bluemix](http://bluemix.net) account.
 
-### Downloading the helloAuthentication sample
+### Download the helloAuthentication sample
 Clone the sample from Github with the following command:
 
-git clone https://github.com/ibm-bluemix-mobile-services/bms-samples-android-helloauthentication
+```git clone https://github.com/ibm-bluemix-mobile-services/bms-samples-android-helloauthentication```
 
-### Configuring the back end for your HelloAuthentication application
+### Configure the mobile back end for your HelloAuthentication application
 Before you can run the helloAuthentication application, you must set up an app on Bluemix.  The following procedure shows you how to create a MobileFirst Services Starter application. A Node.js runtime environment is created so that you can provide server-side functions, such as resource URIs and static files. The Cloudant®NoSQL DB, IBM Push Notifications, and Mobile Client Access services are then added to the app.
 
 Create a mobile backend in the  Bluemix dashboard:
 
-1.	In the Boilerplates section of the Bluemix catalog, click MobileFirst Services Starter.
-2.	Enter a name and host for your mobile backend and click Create.
+1.	In the **Boilerplates** section of the Bluemix catalog, click **MobileFirst Services Starter**.
+2.	Enter a name and host for your mobile backend and click **Create**.
 3.	Click **Finish**.
 
 Configure the Mobile Client Access service:
 
-1.	In the Mobile Client Access dashboard, go to the Authentication tab to configure your authentication service.  
+1.	In the Mobile Client Access dashboard, go to the **Authentication** tab to configure your authentication service.  
 2.  Choose your authentication type (this sample has been configured for Google authentication).
 3.  Enter the required configuration settings (OAuth 2.0 client ID for Google authentication).
 
 **Note:** If you have not previously created a Google cloud application, go to the [Google Developers Console](https://console.developers.google.com), create a new project, and follow our docs to [Configure Google Authentication](https://www.ng.bluemix.net/docs/services/mobileaccess/security/google/t_google_config.html). You will need to enter `com.ibm.helloauthentication` as your package name.
 
-### Configuring the front end in the HelloAuthentication sample
+### Configure the front end in the HelloAuthentication sample
 1. Using Android Studio, open the `bms-samples-android-helloauthentication` directory where the project was cloned.
 2. Android Studio with then kick off a Gradle sync to pull in the required IBM Mobile first dependencies (see `bms-samples-android-helloauthentication\app\build.gradle` for more info).
 3. Once that is complete, open MainActivity.java and locate the try block within the ```onCreate()``` function.
@@ -50,7 +50,7 @@ Configure the Mobile Client Access service:
 ```
 
 
-### Running the Android App
+### Run the Android App
 Now you can run the Android application in your Android emulator or on a physical device.
 
 When you run the application, you will see a single view application with a **PING BLUEMIX** button. When you click this button the application will test a connection from the client to a protected resource in the backend Bluemix application. Since this is a protected resource, the authentication process will begin. Login to the authenticaiton service using valid credentials (Google in this example).  The application will then display if the connection was successful or unsuccessful. In the unsuccessful state an error will be displayed in the application as well as output to Logcat. 

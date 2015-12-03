@@ -73,9 +73,9 @@ public class MainActivity extends Activity implements ResponseListener {
         buttonText.setClickable(false);
 
         TextView errorText = (TextView) findViewById(R.id.error_text);
-        errorText.setText("Pinging Bluemix");
+        errorText.setText("Attempting to Connect");
 
-        Log.i(TAG, "Pinging Bluemix");
+        Log.i(TAG, "Attempting to Connect");
 
         // Testing the connection to Bluemix by sending a Get request to the Node.js application, using this Activity to handle the response.
         // This Node.js code was provided in the MobileFirst Services Starter boilerplate.
@@ -89,7 +89,7 @@ public class MainActivity extends Activity implements ResponseListener {
         final TextView bottomText = (TextView) findViewById(R.id.bottom_text);
         final TextView buttonText = (TextView) findViewById(R.id.button_text);
         final String topStatus = wasSuccessful ? "Yay!" : "Bummer";
-        final String bottomStatus = wasSuccessful ? "You Are Connected" : "Something Went Wrong";
+        final String bottomStatus = wasSuccessful ? "Connected to MCA Protected endpoint" : "Something Went Wrong";
 
         runOnUiThread(new Runnable() {
             @Override
@@ -110,7 +110,7 @@ public class MainActivity extends Activity implements ResponseListener {
     // Implemented for the response listener to handle the success response when Bluemix is pinged
     @Override
     public void onSuccess(Response response) {
-        setStatus("Successfully connected to " + BMSClient.getInstance().getBluemixAppRoute() + "/protected", true);
+        setStatus(BMSClient.getInstance().getBluemixAppRoute() + "/protected", true);
         Log.i(TAG, "Successfully connected to Bluemix protected!");
     }
 
