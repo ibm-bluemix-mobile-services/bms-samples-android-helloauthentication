@@ -36,6 +36,9 @@ import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 
+/**
+ * Main Activity implements Response listener for http request call back handling.
+ */
 public class MainActivity extends Activity implements ResponseListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -59,7 +62,7 @@ public class MainActivity extends Activity implements ResponseListener {
 
         // Register this activity as the default auth listener
         Log.i(TAG, "Registering Google Auth Listener");
-        GoogleAuthenticationManager.getInstance().registerDefaultAuthenticationListener(getApplicationContext());
+        GoogleAuthenticationManager.getInstance().registerDefaultAuthenticationListener(this);
     }
 
     /**
@@ -77,19 +80,24 @@ public class MainActivity extends Activity implements ResponseListener {
 
         Log.i(TAG, "Attempting to Connect");
 
-        // Testing the connection to Bluemix by sending a Get request to the Node.js application, using this Activity to handle the response.
+        // Testing the connection to Bluemix by sending a Get request to a protected resource on the Node.js application, using this Activity to handle the response.
         // This Node.js code was provided in the MobileFirst Services Starter boilerplate.
         // The below request uses the IBM Mobile First Core sdk to send the request using the applicationRoute that was provided when initializing the BMSClient earlier.
         new Request(BMSClient.getInstance().getBluemixAppRoute() + "/protected", Request.GET).send(this, this);
     }
 
+    /**
+     * Updates text fields in the UI
+     * @param messageText String that displays in center text box
+     * @param wasSuccessful Boolean that decides appropriate text to display
+     */
     private void setStatus(final String messageText, boolean wasSuccessful){
         final TextView errorText = (TextView) findViewById(R.id.error_text);
         final TextView topText = (TextView) findViewById(R.id.top_text);
         final TextView bottomText = (TextView) findViewById(R.id.bottom_text);
         final TextView buttonText = (TextView) findViewById(R.id.button_text);
         final String topStatus = wasSuccessful ? "Yay!" : "Bummer";
-        final String bottomStatus = wasSuccessful ? "Connected to MCA Protected endpoint" : "Something Went Wrong";
+        final String bottomStatus = wasSuccessful ? "Connected to MCA protected endpoint" : "Something Went Wrong";
 
         runOnUiThread(new Runnable() {
             @Override
@@ -102,8 +110,9 @@ public class MainActivity extends Activity implements ResponseListener {
         });
     }
 
+    // Necessary override for Google auth, allows Activity to interact back and forth with Bluemix mobile backend
     @Override
-    protected void  onActivityResult( int  requestCode,  int  responseCode, Intent intent) {
+    protected void onActivityResult( int  requestCode,  int  responseCode, Intent intent) {
         GoogleAuthenticationManager.getInstance().onActivityResultCalled(requestCode, responseCode, intent);
     }
 
@@ -111,7 +120,7 @@ public class MainActivity extends Activity implements ResponseListener {
     @Override
     public void onSuccess(Response response) {
         setStatus(BMSClient.getInstance().getBluemixAppRoute() + "/protected", true);
-        Log.i(TAG, "Successfully connected to Bluemix protected!");
+        Log.i(TAG, "You have connected to a protected Bluemix endpoint successfully");
     }
 
     // Implemented for the response listener to handle failure response when Bluemix is pinged
