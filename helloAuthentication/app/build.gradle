@@ -32,7 +32,7 @@ dependencies {
 
     compile group:'com.ibm.mobilefirstplatform.clientsdk.android',
             name:'googleauthentication',
-            version: '1.+',
+            version: '2.+',
             ext: 'aar',
             transitive: true
 }

@@ -17,13 +17,13 @@ package com.ibm.helloauthentication;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-import com.ibm.mobileclientaccess.clientsdk.android.auth.google.GoogleAuthenticationManager;
+import com.ibm.mobilefirstplatform.clientsdk.android.security.googleauthentication.GoogleAuthenticationManager;
+
 import com.ibm.mobilefirstplatform.clientsdk.android.core.api.BMSClient;
 import com.ibm.mobilefirstplatform.clientsdk.android.core.api.Request;
 import com.ibm.mobilefirstplatform.clientsdk.android.core.api.Response;
@@ -63,7 +63,7 @@ public class MainActivity extends Activity implements ResponseListener {
 
         // Register this activity as the default auth listener
         Log.i(TAG, "Registering Google Auth Listener");
-        GoogleAuthenticationManager.getInstance().registerDefaultAuthenticationListener(this);
+        GoogleAuthenticationManager.getInstance().register(this);
     }
 
     /**
