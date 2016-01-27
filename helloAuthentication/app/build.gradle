@@ -23,13 +23,8 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.1.1'
-
-    compile group: 'com.ibm.mobilefirstplatform.clientsdk.android',
-            name:'core',
-            version: '1.+',
-            ext:'aar',
-            transitive: true
-
+    
+    // MobileFirst core dependency is pulled automatically with both google and facebook auth sdks 
     compile group:'com.ibm.mobilefirstplatform.clientsdk.android',
             name:'googleauthentication',
             version: '2.+',
