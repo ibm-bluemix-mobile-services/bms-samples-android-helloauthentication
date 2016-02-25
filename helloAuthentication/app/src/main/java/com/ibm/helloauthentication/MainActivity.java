@@ -15,19 +15,22 @@ package com.ibm.helloauthentication;
  * limitations under the License.
  */
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-
-import com.ibm.mobilefirstplatform.clientsdk.android.security.googleauthentication.GoogleAuthenticationManager;
 
 import com.ibm.mobilefirstplatform.clientsdk.android.core.api.BMSClient;
 import com.ibm.mobilefirstplatform.clientsdk.android.core.api.Request;
 import com.ibm.mobilefirstplatform.clientsdk.android.core.api.Response;
 import com.ibm.mobilefirstplatform.clientsdk.android.core.api.ResponseListener;
+import com.ibm.mobilefirstplatform.clientsdk.android.security.googleauthentication.GoogleAuthenticationManager;
 
 import org.json.JSONObject;
 
@@ -42,6 +45,7 @@ import java.net.UnknownHostException;
 public class MainActivity extends Activity implements ResponseListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
+    private static final int PERMISSION_REQUEST_GET_ACCOUNTS = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +63,12 @@ public class MainActivity extends Activity implements ResponseListener {
         catch (MalformedURLException mue) {
             this.setStatus("Unable to parse Application Route URL\n Please verify you have entered your Application Route and Id correctly and rebuild the app", false);
             buttonText.setClickable(false);
+        }
+
+        // Runtime Permission handling required for SDK 23+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.GET_ACCOUNTS) != PackageManager.PERMISSION_GRANTED) {
+            buttonText.setClickable(false);
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.GET_ACCOUNTS}, PERMISSION_REQUEST_GET_ACCOUNTS);
         }
 
         // Register this activity as the default auth listener
@@ -117,6 +127,24 @@ public class MainActivity extends Activity implements ResponseListener {
         GoogleAuthenticationManager.getInstance().onActivityResultCalled(requestCode, responseCode, intent);
     }
 
+    // Necessary override for Runtime Permission Handling required for SDK 23+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSION_REQUEST_GET_ACCOUNTS: {
+                TextView buttonText = (TextView) findViewById(R.id.button_text);
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    buttonText.setClickable(true);
+
+                } else {
+                    setStatus("Unable to authorize without full permissions. \nPlease retry with permissions enabled.", false);
+                    buttonText.setClickable(false);
+                }
+                return;
+            }
+        }
+    }
+
     // Implemented for the response listener to handle the success response when Bluemix is pinged
     @Override
     public void onSuccess(Response response) {
@@ -155,5 +183,4 @@ public class MainActivity extends Activity implements ResponseListener {
         setStatus(errorMessage, false);
         Log.e(TAG, "Get request to Bluemix failed: " + errorMessage);
     }
-
 }
