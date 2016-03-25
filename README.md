@@ -35,7 +35,7 @@ Before you can run the helloAuthentication application, you must set up an app o
 2.  Choose your authentication type (this sample has been configured for Google authentication).
 3.  Enter the required configuration settings (OAuth 2.0 client ID for Google authentication).
 
->**Note:** If you have not previously created a Google cloud application, go to the [Google Developers Console](https://console.developers.google.com), create a new project, and follow our docs to [Configure Google Authentication](https://www.ng.bluemix.net/docs/services/mobileaccess/security/google/t_google_config.html). You will need to enter `com.ibm.helloauthentication` as your package name.
+>**Note:** If you have not previously created a Google cloud application, go to the [Google Developers Console](https://console.developers.google.com), create a new project, and follow our docs to [Configure Google Authentication](https://www.bluemix.net/docs/services/mobileaccess/google-auth-android.html). You will need to enter `com.ibm.helloauthentication` as your package name.
 
 ### Configuring the front end in the HelloAuthentication sample
 1. Using Android Studio, open the `bms-samples-android-helloauthentication` directory where the project was cloned.
