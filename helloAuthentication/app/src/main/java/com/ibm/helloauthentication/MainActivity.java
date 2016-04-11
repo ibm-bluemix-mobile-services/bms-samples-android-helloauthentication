@@ -58,7 +58,7 @@ public class MainActivity extends Activity implements ResponseListener {
             //initialize SDK with IBM Bluemix application ID and route
 			// You can find your backendRoute and backendGUID in the Mobile Options section on top of your Bluemix application dashboard
             //TODO: Please replace <APPLICATION_ROUTE> with a valid ApplicationRoute and <APPLICATION_ID> with a valid ApplicationId
-            BMSClient.getInstance().initialize(this, "https://swiftsdkdemo.mybluemix.net", "48a2f89f-75ed-463a-b8b5-882232588eb7");
+            BMSClient.getInstance().initialize(this, "<APPLICATION_ROUTE>", "<APPLICATION_ID>");
         }
         catch (MalformedURLException mue) {
             this.setStatus("Unable to parse Application Route URL\n Please verify you have entered your Application Route and Id correctly and rebuild the app", false);
@@ -94,7 +94,7 @@ public class MainActivity extends Activity implements ResponseListener {
         // Testing the connection to Bluemix by sending a Get request to a protected resource on the Node.js application, using this Activity to handle the response.
         // This Node.js code was provided in the MobileFirst Services Starter boilerplate.
         // The below request uses the IBM Mobile First Core sdk to send the request using the applicationRoute that was provided when initializing the BMSClient earlier.
-        new Request(BMSClient.getInstance().getBluemixAppRoute() + "/protectedResource", Request.GET).send(this, this);
+        new Request(BMSClient.getInstance().getBluemixAppRoute() + "/protected", Request.GET).send(this, this);
     }
     /**
      * Called when logoutbutton is pressed.
