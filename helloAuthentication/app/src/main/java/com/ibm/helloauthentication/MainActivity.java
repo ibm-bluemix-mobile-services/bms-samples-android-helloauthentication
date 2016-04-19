@@ -86,8 +86,8 @@ public class MainActivity extends Activity implements ResponseListener {
         TextView buttonText = (TextView) findViewById(R.id.button_text);
         buttonText.setClickable(false);
 
-        TextView errorText = (TextView) findViewById(R.id.error_text);
-        errorText.setText("Attempting to Connect");
+        TextView responseText = (TextView) findViewById(R.id.response_text);
+        responseText.setText("Attempting to Connect");
 
         Log.i(TAG, "Attempting to Connect");
 
@@ -96,6 +96,7 @@ public class MainActivity extends Activity implements ResponseListener {
         // The below request uses the IBM Mobile First Core sdk to send the request using the applicationRoute that was provided when initializing the BMSClient earlier.
         new Request(BMSClient.getInstance().getBluemixAppRoute() + "/protected", Request.GET).send(this, this);
     }
+
     /**
      * Called when logoutbutton is pressed.
      * Logs out user from MCA
@@ -103,57 +104,9 @@ public class MainActivity extends Activity implements ResponseListener {
      */
     public void logout(View view) {
         Log.i(TAG, "Logging out");
-        TextView errorText = (TextView) findViewById(R.id.error_text);
-        errorText.setText("Logged out");
+        TextView responseText = (TextView) findViewById(R.id.response_text);
+        responseText.setText("Logged out");
         GoogleAuthenticationManager.getInstance().logout(getApplicationContext(),null);
-    }
-
-    /**
-     * Updates text fields in the UI
-     * @param messageText String that displays in center text box
-     * @param wasSuccessful Boolean that decides appropriate text to display
-     */
-    private void setStatus(final String messageText, boolean wasSuccessful){
-        final TextView errorText = (TextView) findViewById(R.id.error_text);
-        final TextView topText = (TextView) findViewById(R.id.top_text);
-        final TextView bottomText = (TextView) findViewById(R.id.bottom_text);
-        final TextView buttonText = (TextView) findViewById(R.id.button_text);
-        final String topStatus = wasSuccessful ? "Yay!" : "Bummer";
-        final String bottomStatus = wasSuccessful ? "Connected to MCA protected endpoint" : "Something Went Wrong";
-
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                buttonText.setClickable(true);
-                errorText.setText(messageText);
-                topText.setText(topStatus);
-                bottomText.setText(bottomStatus);
-            }
-        });
-    }
-
-    // Necessary override for Google auth, allows Activity to interact back and forth with Bluemix mobile backend
-    @Override
-    protected void onActivityResult( int  requestCode,  int  responseCode, Intent intent) {
-        GoogleAuthenticationManager.getInstance().onActivityResultCalled(requestCode, responseCode, intent);
-    }
-
-    // Necessary override for Runtime Permission Handling required for SDK 23+
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case PERMISSION_REQUEST_GET_ACCOUNTS: {
-                TextView buttonText = (TextView) findViewById(R.id.button_text);
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    buttonText.setClickable(true);
-
-                } else {
-                    setStatus("Unable to authorize without full permissions. \nPlease retry with permissions enabled.", false);
-                    buttonText.setClickable(false);
-                }
-                return;
-            }
-        }
     }
 
     // Implemented for the response listener to handle the success response when Bluemix is pinged
@@ -193,5 +146,53 @@ public class MainActivity extends Activity implements ResponseListener {
 
         setStatus(errorMessage, false);
         Log.e(TAG, "Get request to Bluemix failed: " + errorMessage);
+    }
+
+    // Necessary override for Google auth, allows Activity to interact back and forth with Bluemix mobile backend
+    @Override
+    protected void onActivityResult( int  requestCode,  int  responseCode, Intent intent) {
+        GoogleAuthenticationManager.getInstance().onActivityResultCalled(requestCode, responseCode, intent);
+    }
+
+    // Necessary override for Runtime Permission Handling required for SDK 23+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSION_REQUEST_GET_ACCOUNTS: {
+                TextView buttonText = (TextView) findViewById(R.id.button_text);
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    buttonText.setClickable(true);
+
+                } else {
+                    setStatus("Unable to authorize without full permissions. \nPlease retry with permissions enabled.", false);
+                    buttonText.setClickable(false);
+                }
+                return;
+            }
+        }
+    }
+
+    /**
+     * Updates text fields in the UI
+     * @param messageText String that displays in center text box
+     * @param wasSuccessful Boolean that decides appropriate text to display
+     */
+    private void setStatus(final String messageText, boolean wasSuccessful){
+        final TextView responseText = (TextView) findViewById(R.id.response_text);
+        final TextView topText = (TextView) findViewById(R.id.top_text);
+        final TextView bottomText = (TextView) findViewById(R.id.bottom_text);
+        final TextView buttonText = (TextView) findViewById(R.id.button_text);
+        final String topStatus = wasSuccessful ? "Yay!" : "Bummer";
+        final String bottomStatus = wasSuccessful ? "Connected to MCA protected endpoint" : "Something Went Wrong";
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                buttonText.setClickable(true);
+                responseText.setText(messageText);
+                topText.setText(topStatus);
+                bottomText.setText(bottomStatus);
+            }
+        });
     }
 }
