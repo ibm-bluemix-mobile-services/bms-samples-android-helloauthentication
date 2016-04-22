@@ -1,6 +1,6 @@
 package com.ibm.helloauthentication;
 /**
- * Copyright 2015 IBM Corp. All Rights Reserved.
+ * Copyright 2015, 2016 IBM Corp. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,34 +93,37 @@ public class MainActivity extends Activity implements ResponseListener {
 
         // Testing the connection to Bluemix by sending a Get request to a protected resource on the Node.js application, using this Activity to handle the response.
         // This Node.js code was provided in the MobileFirst Services Starter boilerplate.
-        // The below request uses the IBM Mobile First Core sdk to send the request using the applicationRoute that was provided when initializing the BMSClient earlier.
+        // The below request uses the Bluemix Mobile Services Core sdk to send the request using the applicationRoute that was provided when initializing the BMSClient.
         new Request(BMSClient.getInstance().getBluemixAppRoute() + "/protected", Request.GET).send(this, this);
     }
 
     /**
-     * Called when logoutbutton is pressed.
-     * Logs out user from MCA
+     * Called when logout button is pressed.
+     * Logs out user from MCA.
      * @param view the button pressed.
      */
     public void logout(View view) {
         Log.i(TAG, "Logging out");
         TextView responseText = (TextView) findViewById(R.id.response_text);
         responseText.setText("Logged out");
-        GoogleAuthenticationManager.getInstance().logout(getApplicationContext(),null);
+        
+        // Logs user out from Google, null parameter can be replaced with a response listener like the one implemented by this activity
+        GoogleAuthenticationManager.getInstance().logout(getApplicationContext(), null);
     }
 
-    // Implemented for the response listener to handle the success response when Bluemix is pinged
+    // Implemented for the response listener to handle the success response when a protected resource is accessed on Bluemix
     @Override
     public void onSuccess(Response response) {
         setStatus(BMSClient.getInstance().getBluemixAppRoute() + "/protected", true);
         Log.i(TAG, "You have connected to a protected Bluemix endpoint successfully");
     }
 
-    // Implemented for the response listener to handle failure response when Bluemix is pinged
+    // Implemented for the response listener to handle failure response when a protected resource is accessed on Bluemix
     @Override
     public void onFailure(Response response, Throwable throwable, JSONObject jsonObject) {
         String errorMessage = "";
-
+	
+	// Be sure to check for null pointers, any of the above paramters may be null depending on the failure.
         if (response != null) {
             if (response.getStatus() == 404) {
                 errorMessage += "Application Route not found at:\n" + BMSClient.getInstance().getBluemixAppRoute() + "/protected" +
