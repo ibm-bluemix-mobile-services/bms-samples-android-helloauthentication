@@ -47,10 +47,11 @@ Before you can run the helloAuthentication application, you must set up an app o
 		try {
             //initialize SDK with IBM Bluemix application ID and route
             //TODO: Please replace <APPLICATION_ROUTE> with a valid ApplicationRoute and <APPLICATION_ID> with a valid ApplicationId
-            BMSClient.getInstance().initialize(this, "<APPLICATION_ROUTE>", "<APPLICATION_ID>");
+            BMSClient.getInstance().initialize(this, "<APPLICATION_ROUTE>", "<APPLICATION_ID>", BMSClient.REGION_US_SOUTH);
         }
 ```
 
+> **Note**: If your Bluemix app is **not** hosted in US_SOUTH, be sure to update the region parameter appropriately: BMSClient.REGION_SYDNEY or BMSClient.REGION_UK.    
 
 ### Running the Android App
 Now you can run the Android application in your Android emulator or on a physical device.

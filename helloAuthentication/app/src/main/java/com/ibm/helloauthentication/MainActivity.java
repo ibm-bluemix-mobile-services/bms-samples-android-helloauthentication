@@ -31,6 +31,7 @@ import com.ibm.mobilefirstplatform.clientsdk.android.core.api.Request;
 import com.ibm.mobilefirstplatform.clientsdk.android.core.api.Response;
 import com.ibm.mobilefirstplatform.clientsdk.android.core.api.ResponseListener;
 import com.ibm.mobilefirstplatform.clientsdk.android.security.googleauthentication.GoogleAuthenticationManager;
+import com.ibm.mobilefirstplatform.clientsdk.android.security.mca.api.MCAAuthorizationManager;
 
 import org.json.JSONObject;
 
@@ -58,7 +59,7 @@ public class MainActivity extends Activity implements ResponseListener {
             //initialize SDK with IBM Bluemix application ID and route
 			// You can find your backendRoute and backendGUID in the Mobile Options section on top of your Bluemix application dashboard
             //TODO: Please replace <APPLICATION_ROUTE> with a valid ApplicationRoute and <APPLICATION_ID> with a valid ApplicationId
-            BMSClient.getInstance().initialize(this, "<APPLICATION_ROUTE>", "<APPLICATION_ID>");
+            BMSClient.getInstance().initialize(this, "<APPLICATION_ROUTE>", "<APPLICATION_ID>", BMSClient.REGION_US_SOUTH);
         }
         catch (MalformedURLException mue) {
             this.setStatus("Unable to parse Application Route URL\n Please verify you have entered your Application Route and Id correctly and rebuild the app", false);
@@ -73,7 +74,11 @@ public class MainActivity extends Activity implements ResponseListener {
 
         // Register this activity as the default auth listener
         Log.i(TAG, "Registering Google Auth Listener");
+
+        // Must create MCA auth manager before registering Google auth Manager
+        MCAAuthorizationManager MCAAuthMan = MCAAuthorizationManager.createInstance(this);
         GoogleAuthenticationManager.getInstance().register(this);
+        BMSClient.getInstance().setAuthorizationManager(MCAAuthMan);
     }
 
     /**
@@ -116,6 +121,7 @@ public class MainActivity extends Activity implements ResponseListener {
     public void onSuccess(Response response) {
         setStatus(BMSClient.getInstance().getBluemixAppRoute() + "/protected", true);
         Log.i(TAG, "You have connected to a protected Bluemix endpoint successfully");
+        Log.d(TAG, MCAAuthorizationManager.getInstance().getUserIdentity().toString());
     }
 
     // Implemented for the response listener to handle failure response when a protected resource is accessed on Bluemix
