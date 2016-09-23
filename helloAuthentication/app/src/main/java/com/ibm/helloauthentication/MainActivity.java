@@ -20,6 +20,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -37,11 +38,10 @@ import org.json.JSONObject;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 
 /**
- * Main Activity implements Response listener for http request call back handling.
+ * Main Activity implements Response listener for call back handling.
  */
 public class MainActivity extends Activity implements ResponseListener {
 
@@ -55,16 +55,8 @@ public class MainActivity extends Activity implements ResponseListener {
 
         TextView buttonText = (TextView) findViewById(R.id.button_text);
 
-        try {
-            //initialize SDK with IBM Bluemix application ID and route
-			// You can find your backendRoute and backendGUID in the Mobile Options section on top of your Bluemix application dashboard
-            //TODO: Please replace <APPLICATION_ROUTE> with a valid ApplicationRoute and <APPLICATION_ID> with a valid ApplicationId
-            BMSClient.getInstance().initialize(this, "<APPLICATION_ROUTE>", "<APPLICATION_ID>", BMSClient.REGION_US_SOUTH);
-        }
-        catch (MalformedURLException mue) {
-            this.setStatus("Unable to parse Application Route URL\n Please verify you have entered your Application Route and Id correctly and rebuild the app", false);
-            buttonText.setClickable(false);
-        }
+        // initialize SDK with IBM Bluemix application ID and REGION, TODO: Update region if not using Bluemix US SOUTH
+        BMSClient.getInstance().initialize(this, BMSClient.REGION_US_SOUTH);
 
         // Runtime Permission handling required for SDK 23+
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.GET_ACCOUNTS) != PackageManager.PERMISSION_GRANTED) {
@@ -76,9 +68,10 @@ public class MainActivity extends Activity implements ResponseListener {
         Log.i(TAG, "Registering Google Auth Listener");
 
         // Must create MCA auth manager before registering Google auth Manager
-        MCAAuthorizationManager MCAAuthMan = MCAAuthorizationManager.createInstance(this);
-        GoogleAuthenticationManager.getInstance().register(this);
+        //TODO: Please replace <APP_GUID> with a valid Application GUID from your MCA instance
+        MCAAuthorizationManager MCAAuthMan = MCAAuthorizationManager.createInstance(this, "<APP_GUID>");
         BMSClient.getInstance().setAuthorizationManager(MCAAuthMan);
+        GoogleAuthenticationManager.getInstance().register(this);
     }
 
     /**
@@ -92,14 +85,15 @@ public class MainActivity extends Activity implements ResponseListener {
         buttonText.setClickable(false);
 
         TextView responseText = (TextView) findViewById(R.id.response_text);
-        responseText.setText("Attempting to Connect");
+        responseText.setText(R.string.Connecting);
 
         Log.i(TAG, "Attempting to Connect");
 
-        // Testing the connection to Bluemix by sending a Get request to a protected resource on the Node.js application, using this Activity to handle the response.
-        // This Node.js code was provided in the MobileFirst Services Starter boilerplate.
-        // The below request uses the Bluemix Mobile Services Core sdk to send the request using the applicationRoute that was provided when initializing the BMSClient.
-        new Request(BMSClient.getInstance().getBluemixAppRoute() + "/protected", Request.GET).send(this, this);
+        // Testing the connection to Bluemix by attempting to obtain an authorization header, using this Activity to handle the response.
+        BMSClient.getInstance().getAuthorizationManager().obtainAuthorization(this, this);
+        // As an alternative, you can send a Get request using the Bluemix Mobile Services Core sdk to send the request to a protected resource on the Node.js application to kick off Authentication. See example below:
+        // new Request(<YOUR_BLUEMIX_APP_ROUTE> + "/protected", Request.GET).send(this, this); TODO: Replace <YOUR_BLUEMIX_APP_ROUTE> with your appRoute on Bluemix
+        // The Node.js code was provided in the MobileFirst Services Starter boilerplate.
     }
 
     /**
@@ -110,7 +104,7 @@ public class MainActivity extends Activity implements ResponseListener {
     public void logout(View view) {
         Log.i(TAG, "Logging out");
         TextView responseText = (TextView) findViewById(R.id.response_text);
-        responseText.setText("Logged out");
+        responseText.setText(R.string.Logout);
         
         // Logs user out from Google, null parameter can be replaced with a response listener like the one implemented by this activity
         GoogleAuthenticationManager.getInstance().logout(getApplicationContext(), null);
@@ -119,9 +113,8 @@ public class MainActivity extends Activity implements ResponseListener {
     // Implemented for the response listener to handle the success response when a protected resource is accessed on Bluemix
     @Override
     public void onSuccess(Response response) {
-        setStatus(BMSClient.getInstance().getBluemixAppRoute() + "/protected", true);
-        Log.i(TAG, "You have connected to a protected Bluemix endpoint successfully");
-        Log.d(TAG, MCAAuthorizationManager.getInstance().getUserIdentity().toString());
+        setStatus(MCAAuthorizationManager.getInstance().getUserIdentity().toString(), true);
+        Log.i(TAG, "You have successfully authenticated against your Bluemix MCA instance: " + response.getResponseText());
     }
 
     // Implemented for the response listener to handle failure response when a protected resource is accessed on Bluemix
@@ -131,9 +124,11 @@ public class MainActivity extends Activity implements ResponseListener {
 	
 	// Be sure to check for null pointers, any of the above paramters may be null depending on the failure.
         if (response != null) {
-            if (response.getStatus() == 404) {
-                errorMessage += "Application Route not found at:\n" + BMSClient.getInstance().getBluemixAppRoute() + "/protected" +
-                        "\nPlease verify your Application Route and rebuild the app.";
+            if (response.getStatus() == 404 || response.getStatus() == 500) {
+                errorMessage += "MCA application not found on Bluemix" +
+                        "\nPlease verify your MCA Application GUID and rebuild the app.";
+            } else if(response.getStatus() == 400) {
+                errorMessage += "If you just corrected your APP_GUID, it may be right, but the authorization has been revoked for this application. Try uninstalling this app before running again.";
             } else {
                 errorMessage += response.toString() + "\n";
             }
@@ -154,7 +149,7 @@ public class MainActivity extends Activity implements ResponseListener {
             errorMessage = "Request Failed With Unknown Error.";
 
         setStatus(errorMessage, false);
-        Log.e(TAG, "Get request to Bluemix failed: " + errorMessage);
+        Log.e(TAG, "Request to Bluemix failed: " + errorMessage);
     }
 
     // Necessary override for Google auth, allows Activity to interact back and forth with Bluemix mobile backend
@@ -165,7 +160,7 @@ public class MainActivity extends Activity implements ResponseListener {
 
     // Necessary override for Runtime Permission Handling required for SDK 23+
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
         switch (requestCode) {
             case PERMISSION_REQUEST_GET_ACCOUNTS: {
                 TextView buttonText = (TextView) findViewById(R.id.button_text);
@@ -176,7 +171,6 @@ public class MainActivity extends Activity implements ResponseListener {
                     setStatus("Unable to authorize without full permissions. \nPlease retry with permissions enabled.", false);
                     buttonText.setClickable(false);
                 }
-                return;
             }
         }
     }

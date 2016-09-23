@@ -3,4 +3,6 @@
     <string name="action_settings">Settings</string>
     <string name="PingButton">PING BLUEMIX</string>
     <string name="DefaultLabel">Hello Auth</string>
+    <string name="Logout">Logged Out</string>
+    <string name="Connecting">Attempting to Connect</string>
 </resources>
